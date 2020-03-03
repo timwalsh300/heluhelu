@@ -9,7 +9,7 @@ try:
                  PRIMARY KEY (username))''')
     curs.execute('''CREATE TABLE books
                  (book_id text, title text, author text, year text,
-                 image blob, favorite_count integer,
+                 image text, count integer, favorite_count integer,
                  PRIMARY KEY (book_id))''')
     curs.execute('''CREATE TABLE user_data
                  (username text, book_list text, favorite_list text,
