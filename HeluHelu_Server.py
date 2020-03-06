@@ -25,10 +25,8 @@ def add_user(conn, username, password):
     print(username)
     print(salt.hex())
     print(hash.hex())
-    curs.execute('INSERT INTO users VALUES (?,?,?)',
-                (username, salt.hex(), hash.hex()))
-    curs.execute('INSERT INTO user_data VALUES (?,?,?)',
-                (username,' ',' '))
+    curs.execute('INSERT INTO users VALUES (?,?,?,?,?)',
+                (username, salt.hex(), hash.hex(), ' ', ' '))
     conn.commit()
 
 def authenticate_user(conn, username, password):
@@ -46,14 +44,14 @@ def authenticate_user(conn, username, password):
 def get_books(conn, username):
     curs = conn.cursor()
     results = curs.execute(
-               'SELECT book_list FROM user_data WHERE username=?',
+               'SELECT books FROM users WHERE username=?',
                (username,))
     return results.fetchone()[0].split(';')
 
 def get_favorites(curs, username):
     curs = conn.cursor()
     results = curs.execute(
-               'SELECT favorite_list FROM user_data WHERE username=?',
+               'SELECT favorites FROM users WHERE username=?',
                (username,))
     return results.fetchone()[0].split(';')
 
@@ -84,11 +82,11 @@ def search_books(api_key, keywords, cache):
 def add_book(conn, username, book):
     curs = conn.cursor()
     results = curs.execute(
-               'SELECT book_list FROM user_data WHERE username=?',
+               'SELECT books FROM users WHERE username=?',
                (username,))
     old_list = results.fetchone()[0]
     new_list = book.title + ';' + old_list
-    curs.execute('UPDATE user_data SET book_list=? WHERE username=?',
+    curs.execute('UPDATE users SET books=? WHERE username=?',
                 (new_list, username))
     book_count = curs.execute(
                  'SELECT count FROM books WHERE book_id=?',
