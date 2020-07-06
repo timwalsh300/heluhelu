@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Search Results</h1>
+  <p>Found the following books with the GoodReads API:</p>
+  <ol>
+    {% for book in results_list %}
+    <li><strong>{{ book.title }}</strong>
+      <ul>
+        <li>Author: {{ book.author }}</li>
+        <li>Year: {{ book.year }}</li>
+        <li><img src="{{ book.image }}" width="100px"></li>
+      </ul>
+    </li>
+    {% endfor %}
+  </ol>
+{% endblock %}

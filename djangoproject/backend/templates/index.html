@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Heluhelu Homepage</h1>
+  <h2>welcome to heluhelu, a website to organize and share your book collection</h2>
+  <p>The system has the following record counts:</p>
+  <ul>
+    <li><strong>Books:</strong> {{ num_books }}</li>
+    <li><strong>Users:</strong> {{ num_users }}</li>
+  </ul>
+{% endblock %}
