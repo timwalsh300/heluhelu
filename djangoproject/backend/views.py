@@ -7,9 +7,6 @@ from backend.forms import SearchForm
 import urllib.request
 import xml.etree.ElementTree
 
-class BookObject():
-    pass
-
 # Create your views here.
 def index(request):
     num_users = User.objects.all().count()
@@ -32,8 +29,18 @@ def books(request):
 def search(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
+        existing_session_cache = False
         if form.is_valid():
             keywords = form.cleaned_data['keywords']
+            try: # see if there's a session cache
+                cache = request.session['cache']
+                existing_session_cache = True
+                if keywords in cache: # see if it contains this query
+                    context = {'results_list': cache[keywords],}
+                    return render(request, 'results.html', context)
+            except: # there's no session cache
+                pass   
+            # or the query isn't cached, so continue here
             api_key = open('api_key.txt', 'r').read()[:-1]
             prefix = 'https://www.goodreads.com/search.xml?key='
             url_keywords = keywords.replace(' ', '+')
@@ -41,17 +48,25 @@ def search(request):
                                         api_key +
                                         '&q=' +
                                         url_keywords) as response:
-                    results_root = xml.etree.ElementTree.fromstring(response.read())
-            results_list = []
+               results_root = xml.etree.ElementTree.fromstring(response.read())
+            # this dictionary stores books extracted from the API response
+            results_list = {}
             for work in results_root[1][6]:
-                book = BookObject()
-                book.book_id = work[0].text
-                book.title = work[8][1].text
-                book.author = work[8][2][1].text
-                book.year = work[4].text
-                book.image = work[8][3].text
-                results_list.append(book)
-            context = {'results_list': results_list,}
+                # create a dictionary for each book
+                book = {}
+                book['book_id'] = work[0].text
+                book['title'] = work[8][1].text
+                book['author'] = work[8][2][1].text
+                book['year'] = work[4].text
+                book['image'] = work[8][3].text
+                results[book['book_id']] = book
+            if not existing_session_cache:
+                cache = {}
+            # cache the results of this query in case the user repeats it,
+            # and to facilitate their selections in the next step
+            cache[keywords] = results
+            request.session['cache'] = cache
+            context = {'results_list': results,}
             return render(request, 'results.html', context)
         else:
             return HttpResponseRedirect(reverse('search')) 
