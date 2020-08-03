@@ -49,8 +49,8 @@ def search(request):
                                         '&q=' +
                                         url_keywords) as response:
                results_root = xml.etree.ElementTree.fromstring(response.read())
-            # this dictionary stores books extracted from the API response
-            results_list = {}
+            # this list stores books extracted from the API response
+            results = []
             for work in results_root[1][6]:
                 # create a dictionary for each book
                 book = {}
@@ -59,7 +59,7 @@ def search(request):
                 book['author'] = work[8][2][1].text
                 book['year'] = work[4].text
                 book['image'] = work[8][3].text
-                results[book['book_id']] = book
+                results.append(book)
             if not existing_session_cache:
                 cache = {}
             # cache the results of this query in case the user repeats it,
