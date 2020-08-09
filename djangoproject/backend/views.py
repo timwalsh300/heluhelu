@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from backend.models import Book
-from backend.forms import SearchForm
+from backend.forms import SearchForm, AddBooksForm
 import urllib.request
 import xml.etree.ElementTree
 
@@ -64,9 +64,11 @@ def search(request):
                 cache = {}
             # cache the results of this query in case the user repeats it,
             # and to facilitate their selections in the next step
-            cache[keywords] = results
+            cache[keywords] = results[:5]
             request.session['cache'] = cache
-            context = {'results_list': results,}
+            add_books_form = AddBooksForm()
+            zipped_lists = zip(add_books_form, results[:10])
+            context = {'zipped_lists': zipped_lists, 'keywords': keywords}
             return render(request, 'results.html', context)
         else:
             return HttpResponseRedirect(reverse('search')) 

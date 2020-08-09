@@ -2,16 +2,20 @@
 
 {% block content %}
   <h1>Search Results</h1>
-  <p>Found the following books with the GoodReads API:</p>
-  <ol>
-    {% for book in results_list %}
-    <li><strong>{{ book.title }}</strong>
-      <ul>
-        <li>Author: {{ book.author }}</li>
-        <li>Year: {{ book.year }}</li>
-        <li><img src="{{ book.image }}" width="100px"></li>
-      </ul>
-    </li>
+  <p>Found the following books with the GoodReads API</p>
+  <p>Select books to add to your collection</p>
+  <form action="" method="post">
+    {% csrf_token %}
+    
+    <input type="submit" value="Select">
+    <table>
+    {% for field, book in zipped_lists %}
+    <tr>
+      <td>{{ field }}</td> 
+      <td><strong>{{ book.title }}</strong><br>Author: {{ book.author }}<br>Year: {{ book.year }}</td>
+      <td><img src="{{ book.image }}" width="100px"></td>
+    </tr>
     {% endfor %}
-  </ol>
+    </table>
+  </form>
 {% endblock %}
