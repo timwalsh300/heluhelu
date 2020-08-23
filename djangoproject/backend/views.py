@@ -57,7 +57,7 @@ def search(request):
             for work in results_root[1][6]:
                 # create a dictionary for each book
                 book = {}
-                book['book_id'] = work[0].text
+                book['goodreads_id'] = work[0].text
                 book['title'] = work[8][1].text
                 book['author'] = work[8][2][1].text
                 book['year'] = work[4].text
@@ -86,11 +86,11 @@ def results(request):
             choice = 'select_result_' + str(i)
             if choice in request.POST:
                 book = Book()
-                book.title = cached_results[i]['book_id']
+                book.goodreads_id = cached_results[i]['goodreads_id']
                 book.title = cached_results[i]['title']
-                book.title = cached_results[i]['author']
-                book.title = cached_results[i]['year']
-                book.title = cached_results[i]['image']
+                book.author = cached_results[i]['author']
+                book.year = cached_results[i]['year']
+                book.image = cached_results[i]['image']
                 book.save()
         return HttpResponseRedirect(reverse('index')) 
     else: # request.method == 'GET'

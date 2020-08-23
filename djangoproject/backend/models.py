@@ -7,7 +7,8 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=100)
     year = models.CharField(max_length=4)
-    isbn = models.CharField(max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>')
+    goodreads_id = models.CharField(max_length=20)
+    image = models.CharField(max_length=200)
     owner = models.ManyToManyField(User, related_name='books', help_text='Who has this book in their collection?')
     favorite = models.ManyToManyField(User, related_name='favorites', help_text='Who marks this book as a favorite in their collection?')
     
