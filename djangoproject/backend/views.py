@@ -12,31 +12,34 @@ def index(request):
     num_users = User.objects.all().count()
     num_books = Book.objects.all().count()
     context = {'num_users': num_users, 'num_books': num_books,}
-    return render(request, 'index.html', context=context)
+    return render(request, 'index.html', context)
 
 def community(request):
     num_users = User.objects.all().count()
     num_books = Book.objects.all().count()
     context = {'num_users': num_users, 'num_books': num_books,}
-    return render(request, 'community.html', context=context)
+    return render(request, 'community.html', context)
 
 def books(request):
     num_users = User.objects.all().count()
     num_books = Book.objects.all().count()
     context = {'num_users': num_users, 'num_books': num_books,}
-    return render(request, 'users.html', context=context)
+    return render(request, 'users.html', context)
 
 def search(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
         existing_session_cache = False
+        add_books_form = AddBooksForm()
         if form.is_valid():
             keywords = form.cleaned_data['keywords']
             try: # see if there's a session cache
                 cache = request.session['cache']
                 existing_session_cache = True
                 if keywords in cache: # see if it contains this query
-                    context = {'results_list': cache[keywords],}
+                    zipped_lists = zip(add_books_form, cache[keywords])
+                    context = {'zipped_lists': zipped_lists,
+                               'keywords': keywords}
                     return render(request, 'results.html', context)
             except: # there's no session cache
                 pass   
@@ -64,14 +67,32 @@ def search(request):
                 cache = {}
             # cache the results of this query in case the user repeats it,
             # and to facilitate their selections in the next step
-            cache[keywords] = results[:5]
+            cache[keywords] = results[:10]
             request.session['cache'] = cache
-            add_books_form = AddBooksForm()
             zipped_lists = zip(add_books_form, results[:10])
             context = {'zipped_lists': zipped_lists, 'keywords': keywords}
             return render(request, 'results.html', context)
         else:
             return HttpResponseRedirect(reverse('search')) 
+    else: # request.method == 'GET'
+        form = SearchForm()
+        context = {'form': form,}
+        return render(request, 'search.html', context)
+
+def results(request):
+    if request.method == 'POST':
+        cached_results = request.session['cache'][request.POST['keywords']]
+        for i in range(0,10):
+            choice = 'select_result_' + str(i)
+            if choice in request.POST:
+                book = Book()
+                book.title = cached_results[i]['book_id']
+                book.title = cached_results[i]['title']
+                book.title = cached_results[i]['author']
+                book.title = cached_results[i]['year']
+                book.title = cached_results[i]['image']
+                book.save()
+        return HttpResponseRedirect(reverse('index')) 
     else: # request.method == 'GET'
         form = SearchForm()
         context = {'form': form,}

@@ -4,7 +4,7 @@
   <h1>Search Results</h1>
   <p>Found the following books with the GoodReads API</p>
   <p>Select books to add to your collection</p>
-  <form action="" method="post">
+  <form action="results" method="post">
     {% csrf_token %}
     
     <input type="submit" value="Select">
@@ -17,5 +17,6 @@
     </tr>
     {% endfor %}
     </table>
+    <input type="hidden" name="keywords" value="{{ keywords }}">
   </form>
 {% endblock %}

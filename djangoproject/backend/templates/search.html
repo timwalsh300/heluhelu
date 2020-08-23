@@ -3,7 +3,7 @@
 {% block content %}
   <h1>Search for New Books</h1>
   <p>Enter title keywords or an author's name</p>
-  <form action="" method="post">
+  <form action="search" method="post">
     {% csrf_token %}
     <table>
     {{ form.as_table }}
