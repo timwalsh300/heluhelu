@@ -6,6 +6,7 @@ from backend.models import Book
 from backend.forms import SearchForm, AddBooksForm
 import urllib.request
 import xml.etree.ElementTree
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def index(request):
@@ -14,18 +15,19 @@ def index(request):
     context = {'num_users': num_users, 'num_books': num_books,}
     return render(request, 'index.html', context)
 
+@login_required
 def community(request):
-    num_users = User.objects.all().count()
-    num_books = Book.objects.all().count()
-    context = {'num_users': num_users, 'num_books': num_books,}
+    users = User.objects.all()
+    context = {'users': users,}
     return render(request, 'community.html', context)
 
+@login_required
 def books(request):
-    num_users = User.objects.all().count()
-    num_books = Book.objects.all().count()
-    context = {'num_users': num_users, 'num_books': num_books,}
-    return render(request, 'users.html', context)
+    books = Book.objects.all()
+    context = {'books': books,}
+    return render(request, 'books.html', context)
 
+@login_required
 def search(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
@@ -79,6 +81,7 @@ def search(request):
         context = {'form': form,}
         return render(request, 'search.html', context)
 
+@login_required
 def results(request):
     if request.method == 'POST':
         cached_results = request.session['cache'][request.POST['keywords']]

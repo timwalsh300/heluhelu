@@ -1,11 +1,8 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Heluhelu Homepage</h1>
-  <h2>welcome to heluhelu, a website to organize and share your book collection</h2>
-  <p>The system has the following record counts:</p>
-  <ul>
-    <li><strong>Books:</strong> {{ num_books }}</li>
-    <li><strong>Users:</strong> {{ num_users }}</li>
-  </ul>
+  <h1>heluhelu</h1>
+  <p>Welcome to heluhelu, a website to organize and share your book collection.<p>
+  <p>Our community consists of {{ num_users }} users with a collection of {{ num_books }} unique books.</p>
+  <p>Please join us to see what other people love to read, and share what you love with others!</p>
 {% endblock %}
