@@ -88,6 +88,9 @@ def results(request):
         for i in range(0,10):
             choice = 'select_result_' + str(i)
             if choice in request.POST:
+              try:
+                selection = Book.objects.get(goodreads_id=cached_results[i]['goodreads_id'])
+              except Book.DoesNotExist:
                 book = Book()
                 book.goodreads_id = cached_results[i]['goodreads_id']
                 book.title = cached_results[i]['title']
@@ -95,8 +98,13 @@ def results(request):
                 book.year = cached_results[i]['year']
                 book.image = cached_results[i]['image']
                 book.save()
+              finally:
+                selection = Book.objects.get(goodreads_id=cached_results[i]['goodreads_id'])
+                selection.owner.set([request.user])
+                selection.save()
         return HttpResponseRedirect(reverse('index')) 
     else: # request.method == 'GET'
         form = SearchForm()
         context = {'form': form,}
         return render(request, 'search.html', context)
+

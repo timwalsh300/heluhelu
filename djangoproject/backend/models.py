@@ -5,10 +5,10 @@ from django.contrib.auth.models import User
 class Book(models.Model):
     """Model representing a book"""
     title = models.CharField(max_length=200)
-    author = models.CharField(max_length=100)
-    year = models.CharField(max_length=4)
+    author = models.CharField(max_length=100, null=True, blank=True)
+    year = models.CharField(max_length=4, null=True, blank=True)
     goodreads_id = models.CharField(max_length=20)
-    image = models.CharField(max_length=200)
+    image = models.CharField(max_length=200, null=True, blank=True)
     owner = models.ManyToManyField(User, related_name='books', help_text='Who has this book in their collection?')
     favorite = models.ManyToManyField(User, related_name='favorites', help_text='Who marks this book as a favorite in their collection?')
     
