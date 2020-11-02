@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>All Books</h1>
+  <p>See all the unique books in the collections of our users...</p> 
+    <table>
+    {% for book in books %}
+    <tr>
+      <td><strong>{{ book.title }}</strong><br>Author: {{ book.author }}<br>Year: {{ book.year }}</td>
+      <td><img src="{{ book.image }}" width="100px"></td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
