@@ -3,7 +3,8 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('community', views.community, name='community'),
+    path('community', views.UserListView.as_view(), name='community'),
+    path('user/<u>', views.user_detail_view, name='user-detail'),
     path('books', views.books, name='books'),
     path('search', views.search, name='search'),
     path('results', views.results, name='results'),

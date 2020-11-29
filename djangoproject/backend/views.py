@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.views import generic
 from backend.models import Book
 from backend.forms import SearchForm, AddBooksForm
 import urllib.request
@@ -15,15 +16,22 @@ def index(request):
     context = {'num_users': num_users, 'num_books': num_books,}
     return render(request, 'index.html', context)
 
-@login_required
-def community(request):
-    users = User.objects.all()
-    context = {'users': users,}
-    return render(request, 'community.html', context)
+class UserListView(generic.ListView):
+    model = User
+
+def user_detail_view(request, u):
+    try:
+        user = User.objects.get(username=u)
+        books = Book.objects.filter(owner=user)
+    except User.DoesNotExist:
+        raise Http404('User does not exist')
+    # must use 'user_obj' here instead of 'user' because that is reserved
+    # in the template language for the logged in user    
+    return render(request, 'auth/user_detail.html', context={'user_obj': user, 'books': books})
 
 @login_required
 def books(request):
-    books = Book.objects.all()
+    books = Book.objects.filter(owner=request.user)
     context = {'books': books,}
     return render(request, 'books.html', context)
 
