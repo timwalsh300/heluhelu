@@ -9,8 +9,7 @@ class Book(models.Model):
     year = models.CharField(max_length=4, null=True, blank=True)
     goodreads_id = models.CharField(max_length=20)
     image = models.CharField(max_length=200, null=True, blank=True)
-    owner = models.ManyToManyField(User, related_name='books', help_text='Who has this book in their collection?')
-    favorite = models.ManyToManyField(User, related_name='favorites', help_text='Who marks this book as a favorite in their collection?')
+    owners = models.ManyToManyField(User, related_name='books', help_text='Who has this book in their collection?')
     
     def __str__(self):
         """String for representing the Model object."""

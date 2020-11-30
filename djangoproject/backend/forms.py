@@ -1,10 +1,10 @@
 from django import forms
 
 class CreateForm(forms.Form):
-    username = forms.CharField()
-    password1 = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput)
-    email = forms.CharField()
+    username = forms.CharField(label='Desired username')
+    password1 = forms.CharField(label='Enter a password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Re-enter the password', widget=forms.PasswordInput)
+    email = forms.CharField(label='Your email address')
 
     def clean_username(self):
         data = self.cleaned_data['username']

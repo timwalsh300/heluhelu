@@ -56,7 +56,7 @@ class UserListView(generic.ListView):
 def user_detail_view(request, u):
     try:
         user = User.objects.get(username=u)
-        books = Book.objects.filter(owner=user)
+        books = Book.objects.filter(owners=user)
     except User.DoesNotExist:
         raise Http404('User does not exist')
     # must use 'user_obj' here instead of 'user' because that is reserved
@@ -65,7 +65,7 @@ def user_detail_view(request, u):
 
 @login_required
 def books(request):
-    books = Book.objects.filter(owner=request.user)
+    books = Book.objects.filter(owners=request.user)
     context = {'books': books,}
     return render(request, 'books.html', context)
 
@@ -142,7 +142,7 @@ def results(request):
                 book.save()
               finally:
                 selection = Book.objects.get(goodreads_id=cached_results[i]['goodreads_id'])
-                selection.owner.set([request.user])
+                selection.owners.add(request.user)
                 selection.save()
         return HttpResponseRedirect(reverse('index')) 
     else: # request.method == 'GET'
