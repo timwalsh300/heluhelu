@@ -7,6 +7,34 @@ import xml.etree.ElementTree
 class Book():
     pass
 
+class BookShelf():
+    shelf = {}
+    def create(conn, books_string):
+        curs = conn.cursor()
+        split_string = books_string.split(';')
+        for id in split_string:
+            result1 = curs.execute('''SELECT * FROM books
+                                  WHERE book_id=?''', (id,))
+            book = Book()
+            book.book_id = id
+            book.title = result1.fetchone()[1]
+            book.author = result1.fetchone()[2]
+            book.year = result1.fetchone()[3]
+            book.image = result1.fetchone()[4]
+            self.shelf[book.book_id] = book
+    def add(book):
+        if book.book_id in self.shelf:
+            return False
+        else:
+            self.shelf[book.book_id] = book
+            return True
+    def remove(book):
+        if book.book_id in self.shelf:
+            del self.shelf[book.book_id]
+            return True
+        else:
+            return False
+
 class Cache():
     cache = {}
     def add(self, keywords, results_list):
@@ -46,7 +74,7 @@ def get_books(conn, username):
     results = curs.execute(
                'SELECT books FROM users WHERE username=?',
                (username,))
-    return results.fetchone()[0].split(';')
+    return results.fetchone()[0]
 
 def get_favorites(curs, username):
     curs = conn.cursor()

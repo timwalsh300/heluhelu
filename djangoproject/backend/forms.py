@@ -1,4 +1,23 @@
 from django import forms
+
+class CreateForm(forms.Form):
+    username = forms.CharField()
+    password1 = forms.CharField(widget=forms.PasswordInput)
+    password2 = forms.CharField(widget=forms.PasswordInput)
+    email = forms.CharField()
+
+    def clean_username(self):
+        data = self.cleaned_data['username']
+        return data
+    def clean_password1(self):
+        data = self.cleaned_data['password1']
+        return data
+    def clean_password2(self):
+        data = self.cleaned_data['password2']
+        return data
+    def clean_email(self):
+        data = self.cleaned_data['email']
+        return data
     
 class SearchForm(forms.Form):
     keywords = forms.CharField()

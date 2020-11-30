@@ -6,11 +6,11 @@
   {% if user_list %}
     <table>
     {% for user in user_list %}
-        <tr>
+        <tr><td>
         <strong><a href="{{ user.get_absolute_url }}">{{ user.username }}</a></strong><br>
         Joined: {{ user.date_joined }}<br>
         Last login: {{ user.last_login }}
-        </tr>
+        </td></tr>
     {% endfor %}
     </table>
   {% else %}

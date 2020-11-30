@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from backend.models import Book
-from backend.forms import SearchForm, AddBooksForm
+from backend.forms import SearchForm, AddBooksForm, CreateForm
 import urllib.request
 import xml.etree.ElementTree
 from django.contrib.auth.decorators import login_required
@@ -15,6 +15,40 @@ def index(request):
     num_books = Book.objects.all().count()
     context = {'num_users': num_users, 'num_books': num_books,}
     return render(request, 'index.html', context)
+
+def create_account_view(request):
+    if request.method == 'POST':
+        form = CreateForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password1 = form.cleaned_data['password1']
+            password2 = form.cleaned_data['password2']
+            email = form.cleaned_data['email']
+            try:
+                existing_user = User.objects.get(username=username)
+                # username is already taken, try again
+                form = CreateForm()
+                context = {'form': form,}
+                return render(request, 'create.html', context)
+            except User.DoesNotExist:
+                # username is available; now check that passwords match
+                if password1 == password2:
+                    user = User.objects.create_user(username, email, password1)
+                    user.save()
+                    return HttpResponseRedirect(reverse('login')) 
+                else:
+                    form = CreateForm()
+                    context = {'form': form,}
+                    return render(request, 'create.html', context)
+        else:
+            form = CreateForm()
+            context = {'form': form,}
+            return render(request, 'create.html', context)
+    else: # request.method == 'GET'
+        form = CreateForm()
+        context = {'form': form,}
+        return render(request, 'create.html', context)
+    
 
 class UserListView(generic.ListView):
     model = User
@@ -54,7 +88,7 @@ def search(request):
             except: # there's no session cache
                 pass   
             # or the query isn't cached, so continue here
-            api_key = open('api_key.txt', 'r').read()[:-1]
+            api_key = open('/home/tim/heluhelu/djangoproject/backend/api_key.txt', 'r').read()[:-1]
             prefix = 'https://www.goodreads.com/search.xml?key='
             url_keywords = keywords.replace(' ', '+')
             with urllib.request.urlopen(prefix +

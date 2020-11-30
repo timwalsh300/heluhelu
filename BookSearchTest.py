@@ -29,10 +29,11 @@ def get_results(api_key, keywords, cache):
         results_list = []
         for work in results_root[1][6]:
             book = Book()
-            book.author = work[8][2][1].text
+            book.book_id = work[0].text
             book.title = work[8][1].text
-            book.cover = work[8][3].text
+            book.author = work[8][2][1].text
             book.year = work[4].text
+            book.image = work[8][3].text
             results_list.append(book)
         cache.add(keywords, results_list[:5])
         return results_list[:5]
