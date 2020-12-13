@@ -10,6 +10,7 @@ class Book(models.Model):
     goodreads_id = models.CharField(max_length=20)
     image = models.CharField(max_length=200, null=True, blank=True)
     owners = models.ManyToManyField(User, related_name='books', help_text='Who has this book in their collection?')
+    num_owners = models.PositiveIntegerField(default=0)
     
     def __str__(self):
         """String for representing the Model object."""

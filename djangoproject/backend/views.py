@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
+from django.db.models import F
 from backend.models import Book
 from backend.forms import SearchForm, AddBooksForm, CreateForm
 import urllib.request
@@ -12,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 def index(request):
     num_users = User.objects.all().count()
-    num_books = Book.objects.all().count()
+    num_books = Book.objects.all().filter(num_owners__gt=0).count()
     context = {'num_users': num_users, 'num_books': num_books,}
     return render(request, 'index.html', context)
 
@@ -67,6 +68,17 @@ def user_detail_view(request, u):
 def remove_book(request, book_id):    
     selection = Book.objects.get(goodreads_id=book_id)
     selection.owners.remove(request.user)
+    selection.num_owners = F('num_owners') - 1
+    selection.save()
+    books = Book.objects.filter(owners=request.user)
+    context = {'books': books,}
+    return render(request, 'books.html', context)
+
+@login_required
+def add_book(request, book_id):    
+    selection = Book.objects.get(goodreads_id=book_id)
+    selection.owners.add(request.user)
+    selection.num_owners = F('num_owners') + 1
     selection.save()
     books = Book.objects.filter(owners=request.user)
     context = {'books': books,}
@@ -151,6 +163,7 @@ def results(request):
                 book.save()
               finally:
                 selection = Book.objects.get(goodreads_id=cached_results[i]['goodreads_id'])
+                selection.num_owners = F('num_owners') + 1
                 selection.owners.add(request.user)
                 selection.save()
         return HttpResponseRedirect(reverse('index')) 
