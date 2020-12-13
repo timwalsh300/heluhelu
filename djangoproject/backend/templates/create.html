@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Create a New Account</h1>
+  <p>Enter your information below and press Create. You will be taken to the login page if successful. You will return to this page if
+     the username is already taken or the passwords you enter don't match.</p>
+  <form action="create" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="Create">
+  </form>
+{% endblock %}
