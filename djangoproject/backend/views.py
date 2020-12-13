@@ -64,6 +64,15 @@ def user_detail_view(request, u):
     return render(request, 'auth/user_detail.html', context={'user_obj': user, 'books': books})
 
 @login_required
+def remove_book(request, book_id):    
+    selection = Book.objects.get(goodreads_id=book_id)
+    selection.owners.remove(request.user)
+    selection.save()
+    books = Book.objects.filter(owners=request.user)
+    context = {'books': books,}
+    return render(request, 'books.html', context)
+
+@login_required
 def books(request):
     books = Book.objects.filter(owners=request.user)
     context = {'books': books,}

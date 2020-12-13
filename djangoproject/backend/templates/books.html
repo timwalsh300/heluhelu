@@ -6,7 +6,7 @@
     <table>
     {% for book in books %}
     <tr>
-      <td><strong>{{ book.title }}</strong><br>Author: {{ book.author }}<br>Year: {{ book.year }}</td>
+      <td><strong>{{ book.title }}</strong><br>Author: {{ book.author }}<br>Year: {{ book.year }}<br><a href="remove-book/{{ book.goodreads_id }}">Remove</a></td>
       <td><img src="{{ book.image }}" width="100px"></td>
     </tr>
     {% endfor %}
