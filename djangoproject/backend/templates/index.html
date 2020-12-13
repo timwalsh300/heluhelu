@@ -4,5 +4,13 @@
   <h1>heluhelu</h1>
   <p>Welcome to heluhelu, a website to organize and share your book collection.<p>
   <p>Our community consists of {{ num_users }} users with a collection of {{ num_books }} unique books.</p>
+  <p>The most popular books in the community are...</p>
+  <table>
+    <tr>
+      {% for book in most_popular %}
+      <td><img src="{{ book.image }}" width="100px"><br>{{ book.num_owners }} members own this book<br><a href="add-book/{{ book.goodreads_id }}">Add to my collection too</a></td>
+      {% endfor %}
+    </tr>
+  </table>
   <p>Please join us to see what other people love to read, and share what you love with others!</p>
 {% endblock %}

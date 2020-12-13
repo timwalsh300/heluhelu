@@ -13,8 +13,9 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 def index(request):
     num_users = User.objects.all().count()
-    num_books = Book.objects.all().filter(num_owners__gt=0).count()
-    context = {'num_users': num_users, 'num_books': num_books,}
+    num_books = Book.objects.filter(num_owners__gt=0).count()
+    most_popular = Book.objects.order_by('num_owners').reverse()[:5]
+    context = {'num_users': num_users, 'num_books': num_books, 'most_popular': most_popular}
     return render(request, 'index.html', context)
 
 def create_account_view(request):
