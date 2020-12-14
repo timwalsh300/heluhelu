@@ -8,7 +8,11 @@
   <table>
     <tr>
       {% for book in most_popular %}
+      {% if book.num_owners > 1 %}
       <td><img src="{{ book.image }}" width="100px"><br>{{ book.num_owners }} members own this book<br><a href="add-book/{{ book.goodreads_id }}">Add to my collection too</a></td>
+      {% else %}
+      <td><img src="{{ book.image }}" width="100px"><br>{{ book.num_owners }} member owns this book<br><a href="add-book/{{ book.goodreads_id }}">Add to my collection too</a></td>
+      {% endif %}
       {% endfor %}
     </tr>
   </table>
