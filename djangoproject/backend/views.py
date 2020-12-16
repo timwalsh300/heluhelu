@@ -7,7 +7,7 @@ from django.db.models import F
 from backend.models import Book
 from backend.forms import SearchForm, AddBooksForm, CreateForm
 import urllib.request
-import xml.etree.ElementTree
+import json
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -67,7 +67,7 @@ def user_detail_view(request, u):
 
 @login_required
 def remove_book(request, book_id):    
-    selection = Book.objects.get(goodreads_id=book_id)
+    selection = Book.objects.get(olid=book_id)
     selection.owners.remove(request.user)
     selection.num_owners = F('num_owners') - 1
     selection.save()
@@ -77,7 +77,7 @@ def remove_book(request, book_id):
 
 @login_required
 def add_book(request, book_id):    
-    selection = Book.objects.get(goodreads_id=book_id)
+    selection = Book.objects.get(olid=book_id)
     selection.owners.add(request.user)
     selection.num_owners = F('num_owners') + 1
     selection.save()
@@ -110,32 +110,38 @@ def search(request):
             except: # there's no session cache
                 pass   
             # or the query isn't cached, so continue here
-            api_key = open('/home/tim/heluhelu/djangoproject/backend/api_key.txt', 'r').read()[:-1]
-            prefix = 'https://www.goodreads.com/search.xml?key='
+            prefix = 'http://openlibrary.org/search.json?q='
             url_keywords = keywords.replace(' ', '+')
             with urllib.request.urlopen(prefix +
-                                        api_key +
-                                        '&q=' +
                                         url_keywords) as response:
-               results_root = xml.etree.ElementTree.fromstring(response.read())
+               api_results = json.load(response)
             # this list stores books extracted from the API response
             results = []
-            for work in results_root[1][6]:
+            for doc in api_results['docs'][:10]:
                 # create a dictionary for each book
                 book = {}
-                book['goodreads_id'] = work[0].text
-                book['title'] = work[8][1].text
-                book['author'] = work[8][2][1].text
-                book['year'] = work[4].text
-                book['image'] = work[8][3].text
+                book['olid'] = doc['key'][7:]
+                book['title'] = doc['title']
+                try:
+                  book['author'] = doc['author_name'][0]
+                except:
+                  book['author'] = 'unkn'
+                try:
+                  book['year'] = str(doc['first_publish_year'])
+                except:
+                  book['year'] = 'unkn'
+                try:
+                  book['cover'] = 'http://covers.openlibrary.org/b/id/' + str(doc['cover_i']) + '-L.jpg'
+                except:
+                  book['cover'] = 'https://dictionary.cambridge.org/us/images/thumb/book_noun_001_01679.jpg?version=5.0.135'
                 results.append(book)
             if not existing_session_cache:
                 cache = {}
             # cache the results of this query in case the user repeats it,
             # and to facilitate their selections in the next step
-            cache[keywords] = results[:10]
+            cache[keywords] = results
             request.session['cache'] = cache
-            zipped_lists = zip(add_books_form, results[:10])
+            zipped_lists = zip(add_books_form, results)
             context = {'zipped_lists': zipped_lists, 'keywords': keywords}
             return render(request, 'results.html', context)
         else:
@@ -153,19 +159,19 @@ def results(request):
             choice = 'select_result_' + str(i)
             if choice in request.POST:
               try:
-                selection = Book.objects.get(goodreads_id=cached_results[i]['goodreads_id'])
+                selection = Book.objects.get(olid=cached_results[i]['olid'])
               except Book.DoesNotExist:
                 book = Book()
-                book.goodreads_id = cached_results[i]['goodreads_id']
+                book.olid = cached_results[i]['olid']
                 book.title = cached_results[i]['title']
                 book.author = cached_results[i]['author']
                 book.year = cached_results[i]['year']
-                book.image = cached_results[i]['image']
+                book.cover = cached_results[i]['cover']
                 book.save()
               finally:
-                selection = Book.objects.get(goodreads_id=cached_results[i]['goodreads_id'])
-                selection.num_owners = F('num_owners') + 1
+                selection = Book.objects.get(olid=cached_results[i]['olid'])
                 selection.owners.add(request.user)
+                selection.num_owners = F('num_owners') + 1
                 selection.save()
         return HttpResponseRedirect(reverse('index')) 
     else: # request.method == 'GET'

@@ -12,8 +12,8 @@
     {% for field, book in zipped_lists %}
     <tr>
       <td>{{ field }}</td> 
-      <td><strong>{{ book.title }}</strong><br>Author: {{ book.author }}<br>Year: {{ book.year }}</td>
-      <td><img src="{{ book.image }}" width="100px"></td>
+      <td><strong>{{ book.title }}</strong><br>Author: {{ book.author }}<br>Year: {{ book.year }}<br>Open Library ID: {{ book.olid }}</td>
+      <td><img src="{{ book.cover }}" width="150px"></td>
     </tr>
     {% endfor %}
     </table>

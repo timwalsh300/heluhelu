@@ -6,8 +6,8 @@
     <table>
     {% for book in books %}
     <tr>
-      <td><strong>{{ book.title }}</strong><br>Author: {{ book.author }}<br>Year: {{ book.year }}<br><a href="../add-book/{{ book.goodreads_id }}">Add to my collection too</a></td>
-      <td><img src="{{ book.image }}" width="100px"></td>
+      <td><strong>{{ book.title }}</strong><br>Author: {{ book.author }}<br>Year: {{ book.year }}<br><a href="../add-book/{{ book.olid }}">Add to my collection too</a></td>
+      <td><img src="{{ book.cover }}" width="150px"></td>
     </tr>
     {% endfor %}
     </table>
