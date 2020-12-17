@@ -78,11 +78,16 @@ def remove_book(request, book_id):
 @login_required
 def add_book(request, book_id):    
     selection = Book.objects.get(olid=book_id)
-    selection.owners.add(request.user)
-    selection.num_owners = F('num_owners') + 1
-    selection.save()
-    books = Book.objects.filter(owners=request.user)
-    context = {'books': books,}
+    my_books = Book.objects.filter(owners=request.user)
+    my_book_olids = []
+    for my_book in my_books:
+        my_book_olids.append(my_book.olid)
+    if selection.olid not in my_book_olids:
+        selection.owners.add(request.user)
+        selection.num_owners = F('num_owners') + 1
+        selection.save()
+        my_books = Book.objects.filter(owners=request.user)
+    context = {'books': my_books,}
     return render(request, 'books.html', context)
 
 @login_required
@@ -170,10 +175,17 @@ def results(request):
                 book.save()
               finally:
                 selection = Book.objects.get(olid=cached_results[i]['olid'])
-                selection.owners.add(request.user)
-                selection.num_owners = F('num_owners') + 1
-                selection.save()
-        return HttpResponseRedirect(reverse('index')) 
+                my_books = Book.objects.filter(owners=request.user)
+                my_book_olids = []
+                for my_book in my_books:
+                    my_book_olids.append(my_book.olid)
+                if selection.olid not in my_book_olids:
+                    selection.owners.add(request.user)
+                    selection.num_owners = F('num_owners') + 1
+                    selection.save()
+        books = Book.objects.filter(owners=request.user)
+        context = {'books': books,}
+        return render(request, 'books.html', context)
     else: # request.method == 'GET'
         form = SearchForm()
         context = {'form': form,}
