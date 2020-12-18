@@ -71,9 +71,7 @@ def remove_book(request, book_id):
     selection.owners.remove(request.user)
     selection.num_owners = F('num_owners') - 1
     selection.save()
-    books = Book.objects.filter(owners=request.user)
-    context = {'books': books,}
-    return render(request, 'books.html', context)
+    return HttpResponseRedirect(reverse('books')) 
 
 @login_required
 def add_book(request, book_id):    
@@ -87,8 +85,7 @@ def add_book(request, book_id):
         selection.num_owners = F('num_owners') + 1
         selection.save()
         my_books = Book.objects.filter(owners=request.user)
-    context = {'books': my_books,}
-    return render(request, 'books.html', context)
+    return HttpResponseRedirect(reverse('books')) 
 
 @login_required
 def books(request):
@@ -183,9 +180,7 @@ def results(request):
                     selection.owners.add(request.user)
                     selection.num_owners = F('num_owners') + 1
                     selection.save()
-        books = Book.objects.filter(owners=request.user)
-        context = {'books': books,}
-        return render(request, 'books.html', context)
+        return HttpResponseRedirect(reverse('books')) 
     else: # request.method == 'GET'
         form = SearchForm()
         context = {'form': form,}
